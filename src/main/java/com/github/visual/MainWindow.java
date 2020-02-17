@@ -149,14 +149,15 @@ public class MainWindow extends Application {
      *
      * @param complex - the complex nmber that is fed into an iterative function
      * @param maxIter - number of final iteration, after which the drawing process is finished
-     * @return number of "jumps" that it takes for a complex number after iterating over equation
-     * for the Mandelbrot Set (Zn+1=Zn^2+C, where C=x + i* y - a random select point for the part of the complex plane
-     * (which belongs to the fractal, of course)
+     * @return number of "jumps" that it takes for the module of a complex number after iterating over equation to get equal to 2.0 or go beyond
+     * 
+     *As for the Mandelbrot Set, (Zn+1=Zn^2+C, where C=x + i* y   is a random select point from the part of the complex plane
+     * which belongs to the fractal, of course)
      *
      * THE FRACTAL RECTANGULAR BOUNDARIES CAN BE DESCRIBED BY A FOLLOWING PAIR OF POINTS (bot-left and top-right)
-     * { {-2;-1} ; {-1;1} } )
-     * The resulting color of the point depends on the number of jumps that it takes for this point
-     * after iterating it's coordinates to jump BEYOND SAID BOUNDARIES ^^^
+     * { {-2;-1*i} ; {1;i} } )
+     * The resulting color of the point depends on number of jumps that it takes for THE MODULE of this point
+     * (after iterating it's coordinates) to get more than or equal to 2
      */
 
     private int jumpCount(Complex complex, int maxIter) {
