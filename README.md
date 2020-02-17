@@ -1,17 +1,17 @@
 # Mandelbrot-Set-Visual-Test
 Visualisation of The Mandelbrot Set, with a simplistic custom RGB color scheme realization (subject to change)
 
-planning to add:
-1)2nd later of 4endering
-2)Anti-aliasing
-3)Multi-threading
-4)Realtime drawing
-5)WIDE COLOR RANGE AND MULTI-COLOURING
+planning to add:\n
+1)2nd layer of rendering \n
+2)Anti-aliasing \n
+3)Multi-threading \n
+4)Realtime drawing \n
+5)WIDE COLOR RANGE AND MULTI-COLOURING \n\n
 
-Planning an optimisation of performance and algorithm:
-1)Check if a dot belongs to the main cardioid and 2nd sphere
-2)other calculation tweaks 
-3)BigInteger
+Planning an optimisation of performance and algorithm:\n
+1)Check if a dot belongs to the main cardioid and 2nd sphere\n
+2)other calculation tweaks \n
+3)BigInteger \n
 
 
 ![1st Photo of the Elephant Valley](https://downloader.disk.yandex.ru/preview/13e61767f610a399ec531e0ec57195d2f337a62e43dd12fdb4da9b264dd7d14d/5e458f11/6sI3e5Cyd-onhGkME0O-oqAXILhbj3Djnh6KTh4mg_qViGlhE6LqE5HJLsSp9JfLd-7KSjNrE3Kto5U7lyAgpw==?uid=0&filename=2020-02-13_16-55-47.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&tknv=v2&owner_uid=22043916&size=2048x2048)
