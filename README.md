@@ -1,9 +1,9 @@
 # Mandelbrot-Set-Visual-Test
 Visualisation of The Mandelbrot Set, with a simplistic custom RGB color scheme realization (subject to change)
 
-planning to add: !\n
-1)2nd layer of rendering \n
-2)Anti-aliasing \n
+planning to add: /n
+1)2nd layer of rendering 
+2)Anti-aliasing 
 3)Multi-threading \n
 4)Realtime drawing \n
 5)WIDE COLOR RANGE AND MULTI-COLOURING \n\n
