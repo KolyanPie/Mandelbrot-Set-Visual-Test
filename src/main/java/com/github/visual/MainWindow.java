@@ -2,6 +2,8 @@ package com.github.visual;
 
 import com.github.fx.DoubleTextField;
 import com.github.fx.ScaleEventHandler;
+import com.github.types.Complex;
+import com.github.types.View;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -16,10 +18,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import com.github.types.Complex;
-import com.github.types.View;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -42,8 +41,6 @@ public class MainWindow extends Application {
     private Stack<View> undoHistory;
     private PrintTask task;
 
-    @FXML
-    private Pane pane;
     @FXML
     private ImageView imageView;
     @FXML
@@ -148,14 +145,13 @@ public class MainWindow extends Application {
     }
 
     /**
-     *
-     * @param complex - the complex nmber that is fed into an iterative function
+     * @param complex - the complex number that is fed into an iterative function
      * @param maxIter - number of final iteration, after which the drawing process is finished
      * @return number of "jumps" that it takes for the module of a complex number after iterating over equation to get equal to 2.0 or go beyond
-     * 
-     *As for the Mandelbrot Set, (Zn+1=Zn^2+C, where C=x + i* y   is a random select point from the part of the complex plane
+     * <p>
+     * As for the Mandelbrot Set, (Zn+1=Zn^2+C, where C=x + i* y   is a random select point from the part of the complex plane
      * which belongs to the fractal, of course)
-     *
+     * <p>
      * THE FRACTAL RECTANGULAR BOUNDARIES CAN BE DESCRIBED BY A FOLLOWING PAIR OF POINTS (bot-left and top-right)
      * { {-2;-1*i} ; {1;i} } )
      * The resulting color of the point depends on number of jumps that it takes for THE MODULE of this point
