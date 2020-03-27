@@ -89,8 +89,6 @@ public class MainWindow extends Application {
         task = new PrintTask();
         canvas.setWidth(900);
         canvas.setHeight(600);
-        System.out.println(pane.widthProperty());
-        System.out.println(biggestAnchorPaneInTheWorld.widthProperty());
         onClickPrint();
         canvas.getGraphicsContext2D().setStroke(javafx.scene.paint.Color.GREEN);
         ScaleEventHandler eventHandler = new ScaleEventHandler(this::scale, canvas);
@@ -242,11 +240,6 @@ public class MainWindow extends Application {
                                 color.getRGB());
                     } catch (ArrayIndexOutOfBoundsException e) {
                         //FixMe: when crossing a border of the picture with a selection frame, some points are missdrawn
-
-                        System.out.println(x);
-                        System.out.println(y);
-                        System.out.println((int) Math.round((x - view.x1) * imageWidth / (view.x2 - view.x1)));
-                        System.out.println((int) Math.round((y - view.y1) * imageHeight / (view.y2 - view.y1)));
                     }
                     progressBar.setProgress((double) iterCount++ / (imageWidth * imageHeight));
                     if (isCancelled()) {
