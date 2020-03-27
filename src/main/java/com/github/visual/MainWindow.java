@@ -2,6 +2,7 @@ package com.github.visual;
 
 import com.github.fx.DoubleTextField;
 import com.github.fx.ScaleEventHandler;
+import com.github.fx.SyncProgressBar;
 import com.github.types.Complex;
 import com.github.types.View;
 import javafx.concurrent.Task;
@@ -236,38 +237,6 @@ public class MainWindow {
                 }
             }
             return null;
-        }
-    }
-
-    private static class SyncProgressBar {
-        private ProgressBar progressBar;
-        private double curVal;
-        private double maxVal;
-        private long time;
-
-        private SyncProgressBar(ProgressBar progressBar) {
-            this.progressBar = progressBar;
-        }
-
-        private synchronized void incrementValue() {
-            curVal++;
-        }
-
-        private void setMaxVal(double maxVal) {
-            this.maxVal = maxVal;
-        }
-
-        private void setZero() {
-            curVal = 0;
-            time = System.currentTimeMillis();
-        }
-
-        private void displayProgress() {
-            progressBar.setProgress(curVal / maxVal);
-        }
-
-        private long getTime() {
-            return System.currentTimeMillis() - time;
         }
     }
 }
