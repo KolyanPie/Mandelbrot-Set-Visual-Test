@@ -22,7 +22,6 @@ import java.util.concurrent.Executors;
 
 import static javafx.embed.swing.SwingFXUtils.toFXImage;
 
-
 public class MainWindow {
     //region some fields
     private Stack<View> history;
@@ -153,9 +152,8 @@ public class MainWindow {
                 textY2.getDouble(), Integer.parseInt(textMaxIter.getText()));
     }
 
-
     @FXML
-    private void onClickPrintReset() {
+    private void onClickReset() {
         textX1.setDouble(-2.0);
         textX2.setDouble(1.0);
         textY1.setDouble(-1.0);

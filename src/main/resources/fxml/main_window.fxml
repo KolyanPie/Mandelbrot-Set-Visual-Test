@@ -7,7 +7,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="biggestAnchorPaneInTheWorld" prefHeight="600" prefWidth="1150"
+<AnchorPane prefHeight="600" prefWidth="1150"
             xmlns="http://javafx.com/javafx/10.0.2-internal"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.visual.MainWindow">
     <VBox prefWidth="250" alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
@@ -44,7 +44,7 @@
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </padding>
-            <Label text="ITERATONS"/>
+            <Label text="ITERATIONS"/>
             <TextField fx:id="textMaxIter" text="50"/>
         </HBox>
         <HBox alignment="CENTER">
@@ -73,7 +73,7 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </VBox.margin>
         </Button>
-        <Button alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#onClickPrintReset" text="reset">
+        <Button alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#onClickReset" text="reset">
             <VBox.margin>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </VBox.margin>
@@ -86,7 +86,7 @@
         </ProgressBar>
         <Label fx:id="progressLabel"/>
     </VBox>
-    <Pane fx:id="pane" AnchorPane.leftAnchor="250" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0"
+    <Pane AnchorPane.leftAnchor="250" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0"
           AnchorPane.topAnchor="0.0">
         <ImageView fx:id="imageView"/>
         <Canvas fx:id="canvas"/>
