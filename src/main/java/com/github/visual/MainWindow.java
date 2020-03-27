@@ -24,6 +24,8 @@ import com.github.types.View;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Stack;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static javafx.embed.swing.SwingFXUtils.toFXImage;
 
@@ -68,6 +70,7 @@ public class MainWindow extends Application {
     private BufferedImage bi;
     private double imageWidth;
     private double imageHeight;
+    private SyncProgressBar syncProgressBar;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -84,6 +87,7 @@ public class MainWindow extends Application {
     }
 
     public void initialize() {
+        syncProgressBar = new SyncProgressBar(progressBar);
         history = new Stack<>();
         undoHistory = new Stack<>();
         task = new PrintTask();
@@ -134,7 +138,7 @@ public class MainWindow extends Application {
         task = new PrintTask();
         task.setOnSucceeded(event -> {
             imageView.setImage(toFXImage(bi, null));
-            progressLabel.setText("success");
+            progressLabel.setText("success in " + syncProgressBar.getTime() + " ms");
         });
         task.setOnFailed(event -> {
             throw new RuntimeException(task.getException());
@@ -213,9 +217,6 @@ public class MainWindow extends Application {
         @Override
         protected Void call() {
             View view = history.peek();
-            Color color;
-            Complex temp;
-            int jumps;
             double aspectRatio = (view.x2 - view.x1) / (view.y2 - view.y1);
             imageWidth = canvas.widthProperty().getValue();
             imageHeight = canvas.heightProperty().getValue();
@@ -225,29 +226,78 @@ public class MainWindow extends Application {
                 imageHeight = (imageWidth / aspectRatio);
             }
             bi = new BufferedImage((int) imageWidth, (int) imageHeight, BufferedImage.TYPE_INT_RGB);
-            int iterCount = 0;
+            syncProgressBar.setZero();
+            syncProgressBar.setMaxVal(imageWidth * imageHeight);
+            ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
             for (double x = view.x1; x < view.x2; x += (view.x2 - view.x1) / imageWidth) {
-                for (double y = view.y1; y < view.y2; y += (view.y2 - view.y1) / imageHeight) {
-                    temp = new Complex(x, y);
-                    jumps = jumpCount(temp, view.maxIter);
-                    if (jumps < view.maxIter) {
-                        //TODO: variable color with a broad spectrum
-                        color = new Color((jumps * 255 / view.maxIter), 70, 255);
-                    } else color = Color.black;
-                    try {
-                        bi.setRGB((int) Math.round((x - view.x1) * imageWidth / (view.x2 - view.x1)),
-                                (int) Math.round((y - view.y1) * imageHeight / (view.y2 - view.y1)),
-                                color.getRGB());
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        //FixMe: when crossing a border of the picture with a selection frame, some points are missdrawn
+                double finalX = x;
+                threadPool.execute(() -> {
+                    for (double y = view.y1; y < view.y2; y += (view.y2 - view.y1) / imageHeight) {
+                        Complex temp;
+                        Color color;
+                        int jumps;
+                        temp = new Complex(finalX, y);
+                        jumps = jumpCount(temp, view.maxIter);
+                        if (jumps < view.maxIter) {
+                            //TODO: variable color with a broad spectrum
+                            color = new Color((jumps * 255 / view.maxIter), 70, 255);
+                        } else color = Color.black;
+                        try {
+                            bi.setRGB((int) Math.round((finalX - view.x1) * imageWidth / (view.x2 - view.x1)),
+                                    (int) Math.round((y - view.y1) * imageHeight / (view.y2 - view.y1)),
+                                    color.getRGB());
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            //FixMe: when crossing a border of the picture with a selection frame, some points are missdrawn
+                        }
+                        syncProgressBar.incrementValue();
+                        if (isCancelled()) {
+                            break;
+                        }
                     }
-                    progressBar.setProgress((double) iterCount++ / (imageWidth * imageHeight));
-                    if (isCancelled()) {
-                        return null;
-                    }
+                    syncProgressBar.displayProgress();
+                });
+            }
+            threadPool.shutdown();
+            while (!threadPool.isTerminated()) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
             return null;
+        }
+    }
+
+    private static class SyncProgressBar {
+        private ProgressBar progressBar;
+        private double curVal;
+        private double maxVal;
+        private long time;
+
+        private SyncProgressBar(ProgressBar progressBar) {
+            this.progressBar = progressBar;
+        }
+
+        private synchronized void incrementValue() {
+            curVal++;
+        }
+
+        private void setMaxVal(double maxVal) {
+            this.maxVal = maxVal;
+        }
+
+        private void setZero() {
+            curVal = 0;
+            time = System.currentTimeMillis();
+        }
+
+        private void displayProgress() {
+            progressBar.setProgress(curVal / maxVal);
+        }
+
+        private long getTime() {
+            return System.currentTimeMillis() - time;
         }
     }
 }
