@@ -4,21 +4,14 @@ import com.github.fx.DoubleTextField;
 import com.github.fx.ScaleEventHandler;
 import com.github.types.Complex;
 import com.github.types.View;
-import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -29,18 +22,18 @@ import java.util.concurrent.Executors;
 import static javafx.embed.swing.SwingFXUtils.toFXImage;
 
 
-/**
- * THE FOLLOWING PROGRAM EXAMPLE WAS MADE BY TIM KOCHETKOV WITH ASSISTANCE OF Michael B., his dear friend.
- * Michael's GitHub --- https://github.com/KolyanPie
- * TIM's GitHub --- https://github.com/TimofeyKochetkov
- */
-
-public class MainWindow extends Application {
-    public AnchorPane biggestAnchorPaneInTheWorld;
+public class MainWindow {
+    //region some fields
     private Stack<View> history;
     private Stack<View> undoHistory;
     private PrintTask task;
+    private BufferedImage bi;
+    private double imageWidth;
+    private double imageHeight;
+    private SyncProgressBar syncProgressBar;
+    //endregion
 
+    //region FXML fields
     @FXML
     private ImageView imageView;
     @FXML
@@ -63,25 +56,7 @@ public class MainWindow extends Application {
     private Button buttonUndo;
     @FXML
     private Button buttonRedo;
-
-    private BufferedImage bi;
-    private double imageWidth;
-    private double imageHeight;
-    private SyncProgressBar syncProgressBar;
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setOnCloseRequest(t -> {
-            Platform.exit();
-            System.exit(0);
-        });
-        primaryStage.setResizable(false);
-        primaryStage.setTitle("Main Render");
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/main_window.fxml"));
-        Scene scene = new Scene(root);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
+    //endregion
 
     public void initialize() {
         syncProgressBar = new SyncProgressBar(progressBar);
@@ -157,7 +132,6 @@ public class MainWindow extends Application {
      * The resulting color of the point depends on number of jumps that it takes for THE MODULE of this point
      * (after iterating it's coordinates) to get more than or equal to 2
      */
-
     private int jumpCount(Complex complex, int maxIter) {
         Complex initialComplex = complex.clone();
         int count = 0;
