@@ -13,21 +13,21 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static javafx.embed.swing.SwingFXUtils.toFXImage;
 
 public class MainWindow {
     //region some fields
     private Stack<View> history;
     private Stack<View> undoHistory;
     private PrintTask task;
-    private BufferedImage bi;
+    private WritableImage writableImage;
+    private PixelWriter pixelWriter;
     private double imageWidth;
     private double imageHeight;
     private SyncProgressBar syncProgressBar;
@@ -109,7 +109,7 @@ public class MainWindow {
         textMaxIter.setText(String.valueOf(view.maxIter));
         task = new PrintTask();
         task.setOnSucceeded(event -> {
-            imageView.setImage(toFXImage(bi, null));
+            imageView.setImage(writableImage);
             progressLabel.setText("success in " + syncProgressBar.getTime() + " ms");
         });
         task.setOnFailed(event -> {
@@ -194,7 +194,8 @@ public class MainWindow {
             } else {
                 imageHeight = (imageWidth / aspectRatio);
             }
-            bi = new BufferedImage((int) imageWidth, (int) imageHeight, BufferedImage.TYPE_INT_RGB);
+            writableImage = new WritableImage((int) imageWidth, (int) imageHeight);
+            pixelWriter = writableImage.getPixelWriter();
             syncProgressBar.setZero();
             syncProgressBar.setMaxVal(imageWidth * imageHeight);
             ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
@@ -209,13 +210,13 @@ public class MainWindow {
                         jumps = jumpCount(temp, view.maxIter);
                         if (jumps < view.maxIter) {
                             //TODO: variable color with a broad spectrum
-                            color = new Color((jumps * 255 / view.maxIter), 70, 255);
-                        } else color = Color.black;
+                            color = new Color(((double) jumps / view.maxIter), 0.2745, 1, 1);
+                        } else color = Color.BLACK;
                         try {
-                            bi.setRGB((int) Math.round((finalX - view.x1) * imageWidth / (view.x2 - view.x1)),
+                            pixelWriter.setColor((int) Math.round((finalX - view.x1) * imageWidth / (view.x2 - view.x1)),
                                     (int) Math.round((y - view.y1) * imageHeight / (view.y2 - view.y1)),
-                                    color.getRGB());
-                        } catch (ArrayIndexOutOfBoundsException e) {
+                                    color);
+                        } catch (IndexOutOfBoundsException e) {
                             //FixMe: when crossing a border of the picture with a selection frame, some points are missdrawn
                         }
                         syncProgressBar.incrementValue();
