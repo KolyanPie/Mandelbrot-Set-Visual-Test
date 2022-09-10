@@ -13,21 +13,23 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static javafx.embed.swing.SwingFXUtils.toFXImage;
+import static com.github.global_coefficients.CanvasProperties.CANVAS_DIAGONAL_FACTOR;
 
 public class MainWindow {
     //region some fields
     private Stack<View> history;
     private Stack<View> undoHistory;
     private PrintTask task;
-    private BufferedImage bi;
+    private WritableImage writableImage;
+    private PixelWriter pixelWriter;
     private double imageWidth;
     private double imageHeight;
     private SyncProgressBar syncProgressBar;
@@ -79,8 +81,8 @@ public class MainWindow {
         x1 = x1 * (view.x2 - view.x1) / this.imageWidth + view.x1;
         x2 = x2 * (view.x2 - view.x1) / this.imageWidth + view.x1;
         y1 = y1 * (view.y2 - view.y1) / this.imageHeight + view.y1;
-        y2 = y2 * (view.y2 - view.y1) / this.imageHeight + view.y1;
-
+        // y2 = k*(x2-x1) + y1    <--->   if fixed then y2 is always on the main diagonal of the canvas
+        y2 = CANVAS_DIAGONAL_FACTOR * (x2-x1) + y1;
         setCoordsAndPrint(x1, x2, y1, y2, view.maxIter);
     }
 
@@ -109,7 +111,7 @@ public class MainWindow {
         textMaxIter.setText(String.valueOf(view.maxIter));
         task = new PrintTask();
         task.setOnSucceeded(event -> {
-            imageView.setImage(toFXImage(bi, null));
+            imageView.setImage(writableImage);
             progressLabel.setText("success in " + syncProgressBar.getTime() + " ms");
         });
         task.setOnFailed(event -> {
@@ -130,7 +132,7 @@ public class MainWindow {
      * THE FRACTAL RECTANGULAR BOUNDARIES CAN BE DESCRIBED BY A FOLLOWING PAIR OF POINTS (bot-left and top-right)
      * { {-2;-1*i} ; {1;i} } )
      * The resulting color of the point depends on number of jumps that it takes for THE MODULE of this point
-     * (after iterating it's coordinates) to get more than or equal to 2
+     * (after iterating its coordinates) to get more than or equal to 2
      */
     private int jumpCount(Complex complex, int maxIter) {
         Complex initialComplex = complex.clone();
@@ -194,7 +196,8 @@ public class MainWindow {
             } else {
                 imageHeight = (imageWidth / aspectRatio);
             }
-            bi = new BufferedImage((int) imageWidth, (int) imageHeight, BufferedImage.TYPE_INT_RGB);
+            writableImage = new WritableImage((int) imageWidth, (int) imageHeight);
+            pixelWriter = writableImage.getPixelWriter();
             syncProgressBar.setZero();
             syncProgressBar.setMaxVal(imageWidth * imageHeight);
             ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
@@ -209,13 +212,13 @@ public class MainWindow {
                         jumps = jumpCount(temp, view.maxIter);
                         if (jumps < view.maxIter) {
                             //TODO: variable color with a broad spectrum
-                            color = new Color((jumps * 255 / view.maxIter), 70, 255);
-                        } else color = Color.black;
+                            color = new Color(((double) jumps / view.maxIter), 0.2745, 1, 1);
+                        } else color = Color.BLACK;
                         try {
-                            bi.setRGB((int) Math.round((finalX - view.x1) * imageWidth / (view.x2 - view.x1)),
+                            pixelWriter.setColor((int) Math.round((finalX - view.x1) * imageWidth / (view.x2 - view.x1)),
                                     (int) Math.round((y - view.y1) * imageHeight / (view.y2 - view.y1)),
-                                    color.getRGB());
-                        } catch (ArrayIndexOutOfBoundsException e) {
+                                    color);
+                        } catch (IndexOutOfBoundsException e) {
                             //FixMe: when crossing a border of the picture with a selection frame, some points are missdrawn
                         }
                         syncProgressBar.incrementValue();

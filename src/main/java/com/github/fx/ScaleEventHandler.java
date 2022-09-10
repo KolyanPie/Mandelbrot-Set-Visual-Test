@@ -1,5 +1,6 @@
 package com.github.fx;
 
+import com.github.global_coefficients.CanvasProperties;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.canvas.Canvas;
@@ -25,13 +26,21 @@ public class ScaleEventHandler implements EventHandler<MouseEvent> {
             y = event.getY();
         }
         if (MouseEvent.MOUSE_DRAGGED.equals(eventType)) {
+            double eventX = event.getX();
+//            double eventY = event.getY();
+            // (y2-y1)/(x2-x1) = k = CANVAS_DIAGONAL_FACTOR
+            double fixedY = CanvasProperties.CANVAS_DIAGONAL_FACTOR * (eventX - x) + y;
             canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-            canvas.getGraphicsContext2D().strokePolygon(new double[]{x, x, event.getX(), event.getX()},
-                    new double[]{y, event.getY(), event.getY(), y}, 4);
+            canvas.getGraphicsContext2D().strokePolygon(new double[]{x, x, eventX, eventX},
+                    new double[]{y, fixedY, fixedY, y}, 4);
         }
         if (MouseEvent.MOUSE_RELEASED.equals(eventType)) {
+            double eventX = event.getX();
+//            double eventY = event.getY();
+            // (y2-y1)/(x2-x1) = k = CANVAS_DIAGONAL_FACTOR
+            double fixedY = CanvasProperties.CANVAS_DIAGONAL_FACTOR * (eventX - x) + y;
             canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-            scalable.scale(Math.min(x, event.getX()), Math.max(x, event.getX()), Math.min(y, event.getY()), Math.max(y, event.getY()));
+            scalable.scale(Math.min(x, eventX), Math.max(x, eventX), Math.min(y, fixedY), Math.max(y, fixedY));
         }
     }
 
