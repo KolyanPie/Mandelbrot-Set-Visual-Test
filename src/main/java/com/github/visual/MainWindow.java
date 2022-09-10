@@ -21,6 +21,8 @@ import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.github.global_coefficients.CanvasProperties.CANVAS_DIAGONAL_FACTOR;
+
 public class MainWindow {
     //region some fields
     private Stack<View> history;
@@ -79,8 +81,8 @@ public class MainWindow {
         x1 = x1 * (view.x2 - view.x1) / this.imageWidth + view.x1;
         x2 = x2 * (view.x2 - view.x1) / this.imageWidth + view.x1;
         y1 = y1 * (view.y2 - view.y1) / this.imageHeight + view.y1;
-        y2 = y2 * (view.y2 - view.y1) / this.imageHeight + view.y1;
-
+        // y2 = k*(x2-x1) + y1    <--->   if fixed then y2 is always on the main diagonal of the canvas
+        y2 = CANVAS_DIAGONAL_FACTOR * (x2-x1) + y1;
         setCoordsAndPrint(x1, x2, y1, y2, view.maxIter);
     }
 
@@ -130,7 +132,7 @@ public class MainWindow {
      * THE FRACTAL RECTANGULAR BOUNDARIES CAN BE DESCRIBED BY A FOLLOWING PAIR OF POINTS (bot-left and top-right)
      * { {-2;-1*i} ; {1;i} } )
      * The resulting color of the point depends on number of jumps that it takes for THE MODULE of this point
-     * (after iterating it's coordinates) to get more than or equal to 2
+     * (after iterating its coordinates) to get more than or equal to 2
      */
     private int jumpCount(Complex complex, int maxIter) {
         Complex initialComplex = complex.clone();
